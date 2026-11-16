@@ -1,0 +1,230 @@
+openapi: 3.0.4
+info:
+  title: Bank Lookup
+  description: >-
+    Bank Lookup is a bank and credit union lookup API covering every
+    FDIC-insured institution ever chartered and every federally insured credit
+    union. Search by name, FDIC certificate, NCUA charter, routing number, SWIFT
+    code, LEI, website domain or IBAN and get the status, headquarters,
+    regulator and identifiers, while paid plans add the successor of merged
+    charters, failure details, the LEI, assets, deposits, members and full
+    branch lists.
+  termsOfService: https://apiverve.com/terms/
+  contact:
+    name: APIVerve Support
+    email: hello@apiverve.com
+    url: https://apiverve.com/contact
+  version: 1.0.0
+externalDocs:
+  description: Learn more about APIVerve
+  url: https://docs.apiverve.com?utm_source=openapi
+servers:
+  - url: https://api.apiverve.com/
+paths:
+  /v1/banklookup:
+    get:
+      summary: Bank Lookup
+      description: >-
+        Find US banks and credit unions by name, identifier, routing number,
+        SWIFT code, LEI, website domain or IBAN, with status, headquarters and
+        identifiers; paid plans add successors, failure details, LEIs,
+        financials and branch lists
+      operationId: banklookup
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: string
+          required: false
+          description: Institution name or part of it; former and trade names match too
+          example: Wells Fargo
+        - name: id
+          in: query
+          schema:
+            type: string
+          required: false
+          description: Our institution id, e.g. fdic-3511 or ncua-5536
+          example: fdic-3511
+        - name: fdicCert
+          in: query
+          schema:
+            type: string
+          required: false
+          description: FDIC certificate number
+          example: '3511'
+        - name: ncuaCharter
+          in: query
+          schema:
+            type: string
+          required: false
+          description: NCUA credit union charter number
+          example: '5536'
+        - name: routing
+          in: query
+          schema:
+            type: string
+          required: false
+          description: Nine-digit ABA routing number
+          example: '256074974'
+        - name: swift
+          in: query
+          schema:
+            type: string
+          required: false
+          description: >-
+            SWIFT/BIC code (8 or 11 characters); non-US codes answer from our
+            SWIFT directory
+          example: WFBIUS6S
+        - name: lei
+          in: query
+          schema:
+            type: string
+          required: false
+          description: Legal Entity Identifier (20 characters)
+          example: KB1H1DSPRFMYMCUFXT09
+        - name: domain
+          in: query
+          schema:
+            type: string
+          required: false
+          description: Website domain, URL or email address of the institution
+          example: wellsfargo.com
+        - name: iban
+          in: query
+          schema:
+            type: string
+          required: false
+          description: >-
+            IBAN; names the bank where the IBAN carries a BIC-style bank code
+            (GB, IE, NL and others)
+          example: GB29NWBK60161331926819
+        - name: state
+          in: query
+          schema:
+            type: string
+          required: false
+          description: Two-letter US state of the headquarters, to narrow a name search
+          example: CA
+        - name: type
+          in: query
+          schema:
+            type: string
+          required: false
+          description: Narrow a name search to one institution type
+          example: credit_union
+        - name: status
+          in: query
+          schema:
+            type: string
+          required: false
+          description: >-
+            active, inactive (merged, failed or closed) or any; any searches
+            active institutions first and falls back to closed ones
+          example: any
+        - name: country
+          in: query
+          schema:
+            type: string
+          required: false
+          description: >-
+            Two-letter country code; a non-US country searches banks by name in
+            our SWIFT directory
+          example: GB
+        - name: branches
+          in: query
+          schema:
+            type: boolean
+          required: false
+          description: Include the branch list for the first five institutions
+          example: true
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          required: false
+          description: Maximum institutions to return (1-50)
+          example: 10
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: status
+                  error:
+                    type: string
+                    description: error
+                  data:
+                    type: object
+                    description: data
+              example:
+                status: ok
+                error: null
+                data:
+                  count: 1
+                  totalMatches: 3
+                  banks:
+                    - id: fdic-3511
+                      name: Wells Fargo Bank, National Association
+                      aliases:
+                        - Crocker National Bank
+                        - Crocker-Citizens National Bank
+                        - Crocker-Anglo National Bank
+                        - Crocker First National Bank of San Francisco
+                      type: bank
+                      charterClass: National bank (OCC)
+                      status: active
+                      statusDate: null
+                      successor: null
+                      establishedDate: '1870-01-01'
+                      foundedYear: 1870
+                      address: 3201 N 4th Ave
+                      city: Sioux Falls
+                      state: SD
+                      zip: '57104'
+                      county: Minnehaha
+                      country: US
+                      latitude: 43.580844403981
+                      longitude: -96.722917126828
+                      coordinatesSource: fdic
+                      website: https://www.wellsfargo.com
+                      domain: wellsfargo.com
+                      phone: null
+                      regulator: OCC
+                      insurer: FDIC
+                      fdicCert: 3511
+                      ncuaCharter: null
+                      rssdId: 451965
+                      lei: KB1H1DSPRFMYMCUFXT09
+                      holdingCompany: WELLS FARGO&COMPANY
+                      routingNumbers:
+                        - '121000248'
+                      swiftCodes:
+                        - WFBIUS6S
+                      branchCount: 4161
+                      totalAssets: 1907928000000
+                      totalDeposits: 1563534000000
+                      netIncomeYtd: 12808000000
+                      members: null
+                      financialsAsOf: '2026-06-30'
+                      failure: null
+                  routingCheck: null
+                  ibanCheck: null
+        '401':
+          description: Your request was not authorized, or your API Key was invalid
+        '404':
+          description: Requested resource was not found
+        '500':
+          description: A server error has occurred, try again later
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: x-api-key
+      in: header
+security:
+  - api_key: []
